@@ -90,6 +90,19 @@
       "image": "",
       "status": "open",
       "description": "使用半年，降噪效果好，因换新出。"
+    },
+    {
+      "title": "苹果笔记本电脑",
+      "location": "东13",
+      "description": "线下面谈",
+      "status": "open",
+      "publisher": "当前用户",
+      "publishTime": "2026-06-30 06:41",
+      "category": "数码产品",
+      "price": 9999,
+      "condition": "九成新",
+      "image": "",
+      "id": 8
     }
   ],
   "lostFounds": [
@@ -158,6 +171,19 @@
       "contact": "微信: wang_umbrella",
       "status": "open",
       "description": "天堂牌黑色长柄伞，手柄有磨损。"
+    },
+    {
+      "title": "羽毛球拍",
+      "location": "秋实食堂",
+      "description": "羽毛球拍，一对，有袋子装着",
+      "status": "open",
+      "publisher": "当前用户",
+      "publishTime": "2026-06-30 06:44",
+      "type": "found",
+      "itemName": "羽毛球拍",
+      "eventTime": "2026-06-23T12:45",
+      "contact": "手机号：12345678901",
+      "id": 7
     }
   ],
   "groupBuys": [
@@ -232,6 +258,19 @@
       "publisher": "食品学院学生",
       "status": "open",
       "description": "多种零食组合，满 20 份享团购价。"
+    },
+    {
+      "title": "新鲜水果饮料",
+      "location": "良食铺子",
+      "description": "草莓，橙子，西瓜等饮料，冰镇",
+      "status": "open",
+      "publisher": "当前用户",
+      "publishTime": "2026-06-30 06:46",
+      "type": "拼餐",
+      "targetCount": 20,
+      "currentCount": 0,
+      "deadline": "2026-07-01T12:00",
+      "id": 7
     }
   ],
   "errands": [
@@ -294,6 +333,20 @@
       "publisher": "北区学生",
       "status": "open",
       "description": "约两箱书，需要搬到三楼。"
+    },
+    {
+      "title": "取快递",
+      "location": "北辰门",
+      "description": "326-3-5462",
+      "status": "open",
+      "publisher": "当前用户",
+      "publishTime": "2026-06-30 06:52",
+      "taskType": "取快递",
+      "reward": 5,
+      "from": "北辰门",
+      "to": "东13",
+      "deadline": "2026-12-12T12:12",
+      "id": 6
     }
   ]
 }
