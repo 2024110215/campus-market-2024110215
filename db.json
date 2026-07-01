@@ -103,6 +103,19 @@
       "condition": "九成新",
       "image": "",
       "id": 8
+    },
+    {
+      "title": "二手模型机",
+      "location": "东3",
+      "description": "无损耗模型机",
+      "status": "open",
+      "publisher": "校园用户",
+      "publishTime": "2026-07-01 01:48",
+      "category": "数码产品",
+      "price": 20,
+      "condition": "九成新",
+      "image": "",
+      "id": 9
     }
   ],
   "lostFounds": [

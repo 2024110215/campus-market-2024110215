@@ -1,198 +1,216 @@
-<script setup lang="ts">
-const user = {
-  name: '张同学',
-  avatar: '🧑‍🎓',
-  campus: '东校区',
-  joinDate: '2025年9月',
-}
-
-const stats = [
-  { label: '已发布', value: '12', icon: '📦' },
-  { label: '已售出', value: '8', icon: '💰' },
-  { label: '收藏', value: '5', icon: '❤️' },
-  { label: '关注', value: '23', icon: '👀' },
-]
-
-const menuItems = [
-  { icon: '📋', label: '我的发布', desc: '管理发布的物品' },
-  { icon: '💰', label: '我的出售', desc: '查看交易记录' },
-  { icon: '❤️', label: '我的收藏', desc: '收藏的物品列表' },
-  { icon: '🏃', label: '跑腿记录', desc: '接单与发布记录' },
-  { icon: '🛍️', label: '团购记录', desc: '参与的拼团' },
-  { icon: '📍', label: '收货地址', desc: '管理收货地址' },
-  { icon: '⚙️', label: '设置', desc: '账号与隐私设置' },
-  { icon: '❓', label: '帮助与反馈', desc: '常见问题与建议' },
-]
-</script>
-
 <template>
-  <section class="user-center">
+  <section class="page">
     <div class="profile-card">
-      <div class="profile-avatar">{{ user.avatar }}</div>
-      <div class="profile-info">
-        <h2 class="profile-name">{{ user.name }}</h2>
-        <span class="profile-campus">{{ user.campus }}</span>
-        <span class="profile-join">加入于 {{ user.joinDate }}</span>
+      <div class="avatar">
+        {{ userStore.displayName.slice(0, 1) }}
+      </div>
+
+      <div>
+        <h1>{{ userStore.displayName }}</h1>
+        <p>{{ userStore.userDescription }}</p>
+        <p>{{ userStore.currentUser.bio }}</p>
       </div>
     </div>
 
-    <div class="stats-row">
-      <div v-for="stat in stats" :key="stat.label" class="stat-item">
-        <span class="stat-icon">{{ stat.icon }}</span>
-        <span class="stat-value">{{ stat.value }}</span>
-        <span class="stat-label">{{ stat.label }}</span>
+    <div class="panel">
+      <h2>我的收藏</h2>
+
+      <EmptyState
+        v-if="favoriteStore.favorites.length === 0"
+        text="暂无收藏内容"
+      />
+
+      <div v-else class="favorite-list">
+        <ItemCard
+          v-for="item in favoriteStore.favorites"
+          :key="`${item.type}-${item.id}`"
+          :title="item.title"
+          :description="item.description"
+          :tag="getTypeLabel(item.type)"
+          :location="item.location"
+        >
+          <template #footer>
+            <button class="remove-btn" @click="favoriteStore.removeFavorite(item.type, item.id)">
+              取消收藏
+            </button>
+          </template>
+        </ItemCard>
       </div>
     </div>
 
-    <div class="menu-list">
-      <div v-for="item in menuItems" :key="item.label" class="menu-item">
-        <span class="menu-icon">{{ item.icon }}</span>
-        <div class="menu-info">
-          <span class="menu-label">{{ item.label }}</span>
-          <span class="menu-desc">{{ item.desc }}</span>
-        </div>
-        <span class="menu-arrow">›</span>
+    <div class="panel">
+      <h2>我的发布</h2>
+
+      <EmptyState
+        v-if="myPosts.length === 0"
+        text="暂无发布内容"
+      />
+
+      <div v-else class="post-list">
+        <ItemCard
+          v-for="post in myPosts"
+          :key="`${post.type}-${post.id}`"
+          :title="post.title"
+          :description="post.description"
+          :tag="getTypeLabel(post.type)"
+          :location="post.location"
+          :time="post.time"
+        />
       </div>
     </div>
   </section>
 </template>
 
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import EmptyState from '../components/EmptyState.vue'
+import ItemCard from '../components/ItemCard.vue'
+import { useFavoriteStore } from '../stores/favorite'
+import { useUserStore } from '../stores/user'
+import { getTrades, type TradeItem } from '../api/trade'
+import { getLostFounds, type LostFoundItem } from '../api/lostFound'
+import { getGroupBuys, type GroupBuyItem } from '../api/groupBuy'
+import { getErrands, type ErrandItem } from '../api/errand'
+
+const userStore = useUserStore()
+const favoriteStore = useFavoriteStore()
+
+interface MyPost {
+  id: number
+  type: 'trade' | 'lostFound' | 'groupBuy' | 'errand'
+  title: string
+  description: string
+  location: string
+  time: string
+}
+
+const myPosts = ref<MyPost[]>([])
+
+onMounted(async () => {
+  const userName = userStore.displayName
+
+  const [tradesRes, lostFoundsRes, groupBuysRes, errandsRes] = await Promise.all([
+    getTrades(),
+    getLostFounds(),
+    getGroupBuys(),
+    getErrands(),
+  ])
+
+  const trades = (tradesRes.data as TradeItem[])
+    .filter((item) => item.publisher === userName)
+    .map((item) => ({
+      id: item.id!,
+      type: 'trade' as const,
+      title: item.title,
+      description: item.description,
+      location: item.location,
+      time: item.publishTime,
+    }))
+
+  const lostFounds = (lostFoundsRes.data as LostFoundItem[])
+    .filter((item) => item.publisher === userName)
+    .map((item) => ({
+      id: item.id!,
+      type: 'lostFound' as const,
+      title: item.title,
+      description: item.description,
+      location: item.location,
+      time: item.eventTime,
+    }))
+
+  const groupBuys = (groupBuysRes.data as GroupBuyItem[])
+    .filter((item) => item.publisher === userName)
+    .map((item) => ({
+      id: item.id!,
+      type: 'groupBuy' as const,
+      title: item.title,
+      description: item.description,
+      location: item.location,
+      time: item.deadline,
+    }))
+
+  const errands = (errandsRes.data as ErrandItem[])
+    .filter((item) => item.publisher === userName)
+    .map((item) => ({
+      id: item.id!,
+      type: 'errand' as const,
+      title: item.title,
+      description: item.description,
+      location: item.from,
+      time: item.deadline,
+    }))
+
+  myPosts.value = [...trades, ...lostFounds, ...groupBuys, ...errands]
+})
+
+function getTypeLabel(type: string) {
+  const map: Record<string, string> = {
+    trade: '二手交易',
+    lostFound: '失物招领',
+    groupBuy: '拼单搭子',
+    errand: '跑腿委托',
+  }
+
+  return map[type] || '校园信息'
+}
+</script>
+
 <style scoped>
-.user-center {
+.page {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+.profile-card,
+.panel {
+  padding: 24px;
+  border-radius: 16px;
+  background: #fff;
+}
+
 .profile-card {
   display: flex;
   align-items: center;
-  gap: 18px;
-  background: linear-gradient(135deg, #ab47bc, #7e57c2);
-  border-radius: 16px;
-  padding: 28px 24px;
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(171, 71, 188, 0.25);
+  gap: 20px;
 }
 
-.profile-avatar {
+.avatar {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-}
-
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.profile-name {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.profile-campus {
-  font-size: 13px;
-  opacity: 0.9;
-}
-
-.profile-join {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.stat-item {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  padding: 16px 12px;
-  text-align: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-}
-
-.stat-icon {
-  font-size: 22px;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.stat-value {
-  font-size: 20px;
+  place-items: center;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 28px;
   font-weight: 700;
-  color: #37474f;
-  display: block;
 }
 
-.stat-label {
-  font-size: 12px;
-  color: #90a4ae;
-  display: block;
-  margin-top: 2px;
+.profile-card h1,
+.panel h2 {
+  margin: 0 0 8px;
 }
 
-.menu-list {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+.profile-card p,
+.hint {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
 }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+.favorite-list,
+.post-list {
+  display: grid;
+  gap: 16px;
+}
+
+.remove-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-item:hover {
-  background: rgba(38, 166, 154, 0.04);
-}
-
-.menu-icon {
-  font-size: 22px;
-}
-
-.menu-info {
-  flex: 1;
-}
-
-.menu-label {
-  font-size: 15px;
-  font-weight: 600;
-  color: #37474f;
-  display: block;
-}
-
-.menu-desc {
-  font-size: 12px;
-  color: #b0bec5;
-  display: block;
-  margin-top: 2px;
-}
-
-.menu-arrow {
-  font-size: 20px;
-  color: #cfd8dc;
+  background: #f3f4f6;
+  color: #374151;
 }
 </style>

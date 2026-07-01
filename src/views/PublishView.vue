@@ -122,8 +122,10 @@ import { createTrade, type TradeItem } from '../api/trade'
 import { createLostFound, type LostFoundItem } from '../api/lostFound'
 import { createGroupBuy, type GroupBuyItem } from '../api/groupBuy'
 import { createErrand, type ErrandItem } from '../api/errand'
+import { useUserStore } from '../stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const publishType = ref<'trade' | 'lostFound' | 'groupBuy' | 'errand'>('trade')
 const submitting = ref(false)
@@ -321,7 +323,7 @@ const typeRouteMap: Record<typeof publishType.value, string> = {
 
 function getSubmitData(): TradeItem | LostFoundItem | GroupBuyItem | ErrandItem {
   const now = new Date().toISOString().slice(0, 16).replace('T', ' ')
-  const base = { title: baseForm.title, location: baseForm.location, description: baseForm.description, status: 'open', publisher: '当前用户', publishTime: now }
+  const base = { title: baseForm.title, location: baseForm.location, description: baseForm.description, status: 'open', publisher: userStore.displayName, publishTime: now }
 
   if (publishType.value === 'trade') {
     return { ...base, category: tradeForm.category, price: tradeForm.price, condition: tradeForm.condition, image: '' } as TradeItem
