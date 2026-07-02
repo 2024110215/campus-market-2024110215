@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实训证据归档 · 校园轻集市</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #eff6ff;
+    --accent: #7c3aed; --success: #10b981; --danger: #ef4444;
+    --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1; --gray-400: #94a3b8; --gray-500: #64748b;
+    --gray-600: #475569; --gray-700: #334155; --gray-800: #1e293b; --gray-900: #0f172a;
+    --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --transition: 0.25s ease;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+    background: var(--gray-50); color: var(--gray-800);
+    -webkit-font-smoothing: antialiased;
+  }
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    padding: 60px 24px 80px; text-align: center; color: #fff;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  }
+  .hero-inner { position: relative; max-width: 720px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px);
+    padding: 6px 16px; border-radius: 999px; font-size: 13px; margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
+  .hero p { font-size: 16px; opacity: 0.9; line-height: 1.6; max-width: 480px; margin: 0 auto; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 40px; margin-top: 32px;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num { font-size: 28px; font-weight: 800; display: block; }
+  .hero-stat-label { font-size: 13px; opacity: 0.75; margin-top: 2px; }
+  .container { max-width: 800px; margin: -40px auto 60px; padding: 0 20px; position: relative; }
+  .timeline { position: relative; }
+  .timeline::before {
+    content: ''; position: absolute; left: 29px; top: 0; bottom: 0;
+    width: 2px; background: var(--gray-200);
+  }
+  .card {
+    position: relative; margin-bottom: 20px; padding-left: 68px;
+  }
+  .card-dot {
+    position: absolute; left: 18px; top: 28px; width: 24px; height: 24px;
+    border-radius: 50%; background: #fff; border: 3px solid var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--primary); z-index: 1;
+  }
+  .card-body {
+    background: #fff; border-radius: var(--radius); padding: 24px 28px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--gray-100);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .card:hover .card-body {
+    transform: translateX(4px); box-shadow: var(--shadow);
+  }
+  .card-meta {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    font-size: 13px; color: var(--gray-400);
+  }
+  .card-tag {
+    background: var(--primary-light); color: var(--primary); font-weight: 500;
+    padding: 2px 10px; border-radius: 999px; font-size: 12px;
+  }
+  .card h2 { font-size: 18px; font-weight: 700; color: var(--gray-800); margin-bottom: 8px; }
+  .card-summary { color: var(--gray-500); font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+  .card-sections { display: flex; flex-direction: column; gap: 12px; }
+  .card-section-title {
+    font-size: 13px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-section ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .card-section li {
+    font-size: 13px; color: var(--gray-500); background: var(--gray-100);
+    padding: 3px 10px; border-radius: 6px;
+  }
+  .card-link {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+    color: var(--primary); font-size: 14px; font-weight: 500; text-decoration: none;
+    padding: 6px 14px; border-radius: var(--radius-sm);
+    transition: background var(--transition);
+  }
+  .card-link:hover { background: var(--primary-light); }
+  .card-link svg { width: 14px; height: 14px; transition: transform var(--transition); }
+  .card-link:hover svg { transform: translateX(3px); }
+  .footer {
+    text-align: center; padding: 40px 20px; color: var(--gray-400); font-size: 13px;
+  }
+  @media (max-width: 640px) {
+    .hero { padding: 40px 20px 60px; }
+    .hero h1 { font-size: 26px; }
+    .hero-stats { gap: 24px; }
+    .hero-stat-num { font-size: 22px; }
+    .card { padding-left: 56px; }
+    .card-body { padding: 18px 20px; }
+    .timeline::before { left: 23px; }
+    .card-dot { left: 12px; width: 22px; height: 22px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">实训项目</div>
+    <h1>校园轻集市 · 证据归档</h1>
+    <p>7 天实训从环境搭建到项目完成，记录每一次开发迭代与技术成长</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">7</span>
+        <span class="hero-stat-label">实训天数</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">12</span>
+        <span class="hero-stat-label">功能页面</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">4</span>
+        <span class="hero-stat-label">业务模块</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">7</span>
+        <span class="hero-stat-label">证据文档</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="timeline">
+
+    <!-- Day 1 -->
+    <div class="card">
+      <div class="card-dot">1</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">环境搭建</span>
+          <span>2026-06-27</span>
+        </div>
+        <h2>环境搭建与 Git 配置</h2>
+        <p class="card-summary">完成 Git 环境全套配置、仓库绑定、AI 编程工具部署，解决 GitHub 443 超时等网络问题，建立规范化开发流程。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">核心操作</div>
+            <ul>
+              <li>Git 全局配置</li>
+              <li>仓库绑定与推送</li>
+              <li>AI 工具安装</li>
+              <li>模型绑定配置</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day1_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="card">
+      <div class="card-dot">2</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">路由与布局</span>
+          <span>2026-06-28</span>
+        </div>
+        <h2>页面骨架与路由导航</h2>
+        <p class="card-summary">完成全部 12 个业务页面创建、Vue Router 路由配置、全局公共布局组件封装，实现全站统一布局结构。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">页面清单</div>
+            <ul>
+              <li>首页</li>
+              <li>二手交易</li>
+              <li>失物招领</li>
+              <li>拼单搭子</li>
+              <li>跑腿委托</li>
+              <li>发布信息</li>
+              <li>消息中心</li>
+              <li>个人中心</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day2_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="card">
+      <div class="card-dot">3</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">Mock 数据</span>
+          <span>2026-06-29</span>
+        </div>
+        <h2>Mock 数据建模与列表渲染</h2>
+        <p class="card-summary">搭建 JSON Server Mock 数据、封装 Axios 请求层、开发通用 ItemCard 组件，将静态页面改造为数据驱动动态列表。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">数据集合</div>
+            <ul>
+              <li>trades 二手交易</li>
+              <li>lostFounds 失物招领</li>
+              <li>groupBuys 拼单搭子</li>
+              <li>errands 跑腿委托</li>
+            </ul>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">组件开发</div>
+            <ul>
+              <li>ItemCard 通用卡片</li>
+              <li>EmptyState 空状态</li>
+              <li>API 分层封装</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day3_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div class="card">
+      <div class="card-dot">4</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">表单交互</span>
+          <span>2026-06-30</span>
+        </div>
+        <h2>表单设计与数据提交</h2>
+        <p class="card-summary">完成发布表单搭建、输入校验、数据提交、Mock 数据写入及列表联动刷新，实现完整数据新增流程。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">表单字段</div>
+            <ul>
+              <li>商品名称</li>
+              <li>商品价格</li>
+              <li>商品分类</li>
+              <li>商品描述</li>
+              <li>发布人昵称</li>
+            </ul>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">校验规则</div>
+            <ul>
+              <li>必填校验</li>
+              <li>标题长度限制</li>
+              <li>价格有效性</li>
+              <li>描述字数限制</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day4_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Day 5 -->
+    <div class="card">
+      <div class="card-dot">5</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">状态管理</span>
+          <span>2026-07-01</span>
+        </div>
+        <h2>Pinia 状态管理与用户中心</h2>
+        <p class="card-summary">创建 user 和 favorite 两个 Pinia Store，接入导航栏用户信息、发布页用户关联、列表页收藏功能，完善个人中心。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">Store 设计</div>
+            <ul>
+              <li>user.ts 用户管理</li>
+              <li>favorite.ts 收藏管理</li>
+              <li>登录/登出/资料更新</li>
+              <li>收藏切换/列表管理</li>
+            </ul>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">接入页面</div>
+            <ul>
+              <li>导航栏用户信息</li>
+              <li>发布页自动关联</li>
+              <li>列表页收藏按钮</li>
+              <li>个人中心展示</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day5_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Day 6 -->
+    <div class="card">
+      <div class="card-dot">6</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">交互优化</span>
+          <span>2026-07-02</span>
+        </div>
+        <h2>交互优化与体验完善</h2>
+        <p class="card-summary">创建 LoadingState、ErrorState、SearchBar 组件，为列表页补全加载/错误/搜索功能，优化发布表单提交状态和收藏按钮反馈。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">新增组件</div>
+            <ul>
+              <li>LoadingState 加载状态</li>
+              <li>ErrorState 错误状态</li>
+              <li>SearchBar 搜索组件</li>
+              <li>EmptyState 优化</li>
+            </ul>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">优化项</div>
+            <ul>
+              <li>加载状态提示</li>
+              <li>错误处理重试</li>
+              <li>关键词搜索过滤</li>
+              <li>提交按钮反馈</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day6_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Day 7 -->
+    <div class="card">
+      <div class="card-dot">7</div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-tag">验收总结</span>
+          <span>2026-07-02</span>
+        </div>
+        <h2>综合验收与项目展示</h2>
+        <p class="card-summary">全功能走查、生产构建验证、README 完善、证据文档归档整理、技术能力总结与改进方向梳理。</p>
+        <div class="card-sections">
+          <div class="card-section">
+            <div class="card-section-title">核心功能</div>
+            <ul>
+              <li>四类信息浏览搜索</li>
+              <li>信息发布与校验</li>
+              <li>收藏切换与持久化</li>
+              <li>个人中心展示</li>
+              <li>加载/错误/空状态</li>
+            </ul>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">项目规模</div>
+            <ul>
+              <li>12 个页面</li>
+              <li>6 个 API 模块</li>
+              <li>9 个通用组件</li>
+              <li>2 个 Store</li>
+              <li>13 个路由</li>
+            </ul>
+          </div>
+        </div>
+        <a class="card-link" href="Day7_Evidence.md" target="_blank">
+          查看完整文档 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <p>校园轻集市 · 实训项目 · 共 7 天 · Vue 3 + TypeScript + Pinia + JSON Server</p>
+</div>
+
+</body>
+</html>

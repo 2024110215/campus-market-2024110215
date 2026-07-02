@@ -1,126 +1,79 @@
-Campus Market Seed
+# 校园轻集市
 
-《校园轻集市》AI 辅助前端工程实践课程种子仓库
+基于 Vue 3 + TypeScript + Pinia 的校园信息服务平台，支持二手交易、失物招领、拼单搭子、跑腿委托四大业务模块。
 
-⸻
+## 快速开始
 
-项目简介
-
-Campus Market Seed 是《校园轻集市》课程的统一种子仓库（Seed Repository）。
-
-本仓库不仅提供 Vue 3 前端项目模板，还包含课程文档、开发规范、AI 协作规范、过程性证据模板以及自动检测框架，为整个实训提供统一的开发基础。
-
-本仓库是所有同学开展项目实践的起点。
-
-⸻
-
-项目目标
-
-通过本课程，你将完成一个基于 Vue 3 的校园轻集市前端项目，并体验真实的软件工程开发流程。
-
-课程重点包括：
-
-* Vue 3 工程化开发
-* Git 版本管理
-* AI Coding 协作开发
-* 软件工程规范
-* 过程性证据管理
-* 项目验收与自动检测
-
-⸻
-
-快速开始
-
-首次使用本仓库，请按照以下顺序阅读文档：
-
-README.md
-    │
-    ▼
-docs/guide/Environment_Setup.md
-    │
-    ▼
-docs/guide/Getting_Started.md
-
-随后执行：
-
-git clone <课程仓库地址>
-cd campus-market-seed
-nvm use
+```bash
+# 1. 安装依赖
 pnpm install
+
+# 2. 启动 Mock 服务（终端 1）
+pnpm mock
+
+# 3. 启动前端项目（终端 2）
 pnpm dev
 
-浏览器访问：
-
+# 4. 浏览器访问
 http://localhost:5173
+```
 
-如果页面显示：
+## 技术栈
 
-项目启动成功
+| 技术 | 用途 |
+|------|------|
+| Vue 3 + TypeScript | 前端框架 |
+| Vite | 构建工具 |
+| Vue Router | 路由导航 |
+| Pinia | 状态管理 |
+| Axios | HTTP 请求 |
+| JSON Server | Mock 数据服务 |
 
-说明开发环境已经配置完成。
+## 项目结构
 
-⸻
+```
+src/
+├── api/            # 接口封装层（http.ts + 4 个业务模块）
+├── components/     # 通用组件（ItemCard、FormField、EmptyState 等 9 个）
+├── router/         # 路由配置（13 条路由）
+├── stores/         # Pinia Store（user + favorite）
+├── views/          # 页面组件（12 个页面）
+├── assets/         # 全局样式
+└── types/          # 类型定义
+```
 
-项目结构
+## 功能清单
 
-campus-market-seed
-├── docs
-│   ├── ai              # AI 协作规范
-│   ├── evidence        # 每日过程证据
-│   └── guide           # 学生使用指南
-├── scripts             # 自动检测工具
-├── src                 # 项目源码
-└── CHECK_REPORT.md     # 自动检测报告（后续版本启用）
+- **二手交易**：商品列表、分类筛选、价格展示
+- **失物招领**：寻物/招领区分、联系方式展示
+- **拼单搭子**：拼单进度、截止时间倒计时
+- **跑腿委托**：任务酬劳、起止地点展示
+- **信息发布**：四种业务类型动态表单、输入校验、Mock 数据写入
+- **收藏系统**：收藏/取消收藏、跨页面状态同步
+- **个人中心**：用户资料展示、收藏列表管理
+- **交互优化**：加载状态、空状态、错误提示、搜索过滤
 
-⸻
+## 7 天实训推进
 
-文档导航
+| Day | 主题 | 核心成果 |
+|-----|------|---------|
+| Day1 | 需求分析与项目初始化 | 环境搭建、Git 配置、项目启动 |
+| Day2 | 页面骨架与路由导航 | 12 个页面、路由配置、布局组件 |
+| Day3 | Mock 数据与列表渲染 | JSON Server、Axios、ItemCard |
+| Day4 | 表单设计与数据提交 | 发布表单、校验、POST 写入 |
+| Day5 | 状态管理与用户中心 | Pinia Store、收藏、个人中心 |
+| Day6 | 交互优化与体验完善 | 加载/错误/搜索组件、状态打磨 |
+| Day7 | 综合验收与项目展示 | 构建检查、文档归档、总结复盘 |
 
-文档	说明
-docs/guide/Environment_Setup.md	配置课程开发环境
-docs/guide/Getting_Started.md	Day1 快速开始指南
-docs/ai/AI_Collaboration_Card.md	AI 协作记录规范
-docs/evidence/	每日过程性证据模板
+## 证据归档
 
-⸻
+实训过程证据文档详见 `docs/evidence/` 目录，包含 7 天的完整开发记录、AI 协作日志、问题排查和反思总结。
 
-技术栈
+## 启动命令速查
 
-* Vue 3
-* TypeScript
-* Vite
-* Vue Router
-* Pinia
-* ESLint
-* Oxlint
-
-⸻
-
-开发规范
-
-在整个实训过程中，请遵循以下要求：
-
-* 使用 Git 管理项目开发过程；
-* 每完成一个独立功能及时提交 Commit；
-* 合理使用 AI Coding 工具辅助开发；
-* 保留 AI 协作记录；
-* 每天完成对应的 Evidence；
-* 保持项目始终能够正常运行。
-
-⸻
-
-后续版本
-
-后续版本将逐步提供：
-
-* 自动检测工具（Check Engine）
-* 自动评分报告
-* Git 提交分析
-* AI 协作分析
-* 教师验收工具
-
-⸻
-
-License
-
-本仓库仅用于《校园轻集市》课程教学与实践。
+```bash
+pnpm dev        # 启动前端开发服务器
+pnpm mock       # 启动 JSON Server Mock 服务（端口 3001）
+pnpm build      # 生产构建
+pnpm preview    # 预览生产构建
+```
