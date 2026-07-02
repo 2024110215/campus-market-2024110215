@@ -5,13 +5,25 @@
       <p>浏览同学发布的闲置物品，发现校园内的实用好物。</p>
     </div>
 
+    <SearchBar v-model="keyword" placeholder="搜索商品名称..." />
+
+    <LoadingState v-if="loading" text="正在加载商品列表..." />
+
+    <ErrorState
+      v-else-if="error"
+      :text="error"
+      :show-retry="true"
+      @retry="fetchTrades"
+    />
+
     <EmptyState
-      v-if="trades.length === 0"
+      v-else-if="filteredTrades.length === 0"
       text="暂无二手交易信息"
     />
+
     <div v-else class="list">
       <ItemCard
-        v-for="item in trades"
+        v-for="item in filteredTrades"
         :key="item.id"
         :title="item.title"
         :description="item.description"
@@ -23,14 +35,18 @@
           <strong>￥{{ item.price }}</strong>
           <span class="condition">{{ item.condition }}</span>
 
-          <button class="favorite-btn" @click="favoriteStore.toggleFavorite({
-            id: item.id,
-            type: 'trade',
-            title: item.title,
-            description: item.description,
-            location: item.location
-          })">
-            {{ favoriteStore.isFavorite('trade', item.id) ? '已收藏' : '收藏' }}
+          <button
+            class="favorite-btn"
+            :class="{ favorited: favoriteStore.isFavorite('trade', item.id) }"
+            @click="favoriteStore.toggleFavorite({
+              id: item.id,
+              type: 'trade',
+              title: item.title,
+              description: item.description,
+              location: item.location
+            })"
+          >
+            {{ favoriteStore.isFavorite('trade', item.id) ? '★ 已收藏' : '☆ 收藏' }}
           </button>
         </template>
       </ItemCard>
@@ -39,26 +55,52 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import ItemCard from '../components/ItemCard.vue'
 import EmptyState from '../components/EmptyState.vue'
+import LoadingState from '../components/LoadingState.vue'
+import ErrorState from '../components/ErrorState.vue'
+import SearchBar from '../components/SearchBar.vue'
 import { getTrades, type TradeItem } from '../api/trade'
 import { useFavoriteStore } from '../stores/favorite'
 
 const trades = ref<TradeItem[]>([])
+const loading = ref(true)
+const error = ref('')
+const keyword = ref('')
 const favoriteStore = useFavoriteStore()
 
-onMounted(async () => {
-  const res = await getTrades()
-  trades.value = res.data
+const filteredTrades = computed(() => {
+  if (!keyword.value) return trades.value
+  const kw = keyword.value.toLowerCase()
+  return trades.value.filter(item =>
+    item.title.toLowerCase().includes(kw) ||
+    item.category.toLowerCase().includes(kw) ||
+    item.description.toLowerCase().includes(kw)
+  )
 })
+
+async function fetchTrades() {
+  loading.value = true
+  error.value = ''
+  try {
+    const res = await getTrades()
+    trades.value = res.data
+  } catch {
+    error.value = '商品列表加载失败，请确认 JSON Server 是否已启动'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchTrades)
 </script>
 
 <style scoped>
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .page-header {
@@ -69,16 +111,6 @@ onMounted(async () => {
 
 .page-header h1 {
   margin: 0 0 8px;
-}
-
-.favorite-btn {
-  margin-left: 12px;
-  border: none;
-  border-radius: 999px;
-  padding: 6px 12px;
-  cursor: pointer;
-  background: #f3f4f6;
-  color: #374151;
 }
 
 .page-header p {
@@ -92,8 +124,31 @@ onMounted(async () => {
   gap: 16px;
 }
 
+.favorite-btn {
+  margin-left: 12px;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.favorite-btn:hover {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.favorite-btn.favorited {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
 .condition {
   margin-left: 12px;
   color: #6b7280;
+  font-size: 13px;
 }
 </style>

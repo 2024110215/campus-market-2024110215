@@ -104,9 +104,12 @@
         </FormField>
       </template>
 
+      <p v-if="submitError" class="submit-error">{{ submitError }}</p>
+
       <div class="actions">
-        <button type="button" class="secondary" @click="resetForm">重置</button>
+        <button type="button" class="secondary" :disabled="submitting" @click="resetForm">重置</button>
         <button type="submit" class="primary" :disabled="submitting">
+          <span v-if="submitting" class="btn-spinner"></span>
           {{ submitting ? '提交中...' : '发布' }}
         </button>
       </div>
@@ -129,6 +132,7 @@ const userStore = useUserStore()
 
 const publishType = ref<'trade' | 'lostFound' | 'groupBuy' | 'errand'>('trade')
 const submitting = ref(false)
+const submitError = ref('')
 
 const baseForm = reactive({
   title: '',
@@ -340,6 +344,7 @@ function getSubmitData(): TradeItem | LostFoundItem | GroupBuyItem | ErrandItem 
 async function handleSubmit() {
   if (!validate()) return
   submitting.value = true
+  submitError.value = ''
   try {
     const data = getSubmitData()
     const creators: Record<typeof publishType.value, (data: unknown) => Promise<unknown>> = {
@@ -353,7 +358,7 @@ async function handleSubmit() {
     resetForm()
     router.push(typeRouteMap[publishType.value])
   } catch {
-    alert('发布失败，请检查 Mock 服务是否已启动。')
+    submitError.value = '发布失败，请确认 JSON Server 是否已启动'
   } finally {
     submitting.value = false
   }
@@ -431,5 +436,30 @@ button:disabled {
 .secondary {
   background: #f3f4f6;
   color: #374151;
+}
+
+.submit-error {
+  margin: 0;
+  padding: 10px 14px;
+  background: #fef2f2;
+  color: #ef4444;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
